@@ -40,7 +40,11 @@ ESP_GPS_Data_t esp_parse_gps_data(char * packet)
                 switch (field_counter) {
                     case 0:
                         while (field != NULL) {
-                            packet_parameters.is_valid = true;
+                            if (strcmp(field,"GPGGA") || strcmp(field,"GLGGA")
+                             || strcmp(field,"GAGGA") || strcmp(field,"BDGGA")
+                             || strcmp(field,"GBGGA")) {
+                                packet_parameters.is_valid = true;
+                             }
                             break;
                         }
                         break;
