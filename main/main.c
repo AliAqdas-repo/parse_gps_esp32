@@ -1,5 +1,6 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<string.h>
 #include "driver/uart.h"
 #include "esp_log.h"
 
@@ -16,11 +17,11 @@ typedef struct
     float number_of_satelities;
     float hdop;
     float altitude;
-    char* altitude_units;
+    char altitude_units;
     float undulation;
-    char* undulation_units;
+    char undulation_units;
     float age;
-    char* station_id;
+    char station_id[4];
 } gps_parameters;
 
 gps_parameters parse_gps_data(char * packet);
@@ -29,12 +30,24 @@ static const char *TAG = "example";
 
 int app_main()
 {
-    gps_parameters parsed_data;
-    
+    gps_parameters parsed_data ;
+    printf("Hello World\n");
     while (1) {
-        char *msg = "$GPGGA,202530.00,5109.0262,N,11401.8407,W,5,40,0.5,1097.36,M,-17.00,M,18,TSTR*61";
+        static char *msg = "$GPGGA,202530.00,5109.0262,N,11401.8407,W,5,40,0.5,1097.36,M,-17.00,M,18,TSTR*61";
         parsed_data = parse_gps_data(msg);
-        ESP_LOGI(TAG,"Goodbye!\n");
+        printf("Valid: %d\n" ,parsed_data.is_valid);
+        printf("UTC Time: %f\n" ,parsed_data.utc_time);
+        printf("Longitude: %f\n",parsed_data.longitude);
+        printf("Latitude: %f\n" ,parsed_data.latitude);
+        printf("Fix Quality: %f\n", parsed_data.fix_quality);
+        printf("No. of Satelites: %f\n", parsed_data.number_of_satelities);
+        printf("HDOP: %f\n", parsed_data.hdop);
+        printf("Altitude: %f\n", parsed_data.altitude);
+        printf("Altitude Units: %c\n", parsed_data.altitude_units);
+        printf("Undulation: %f\n", parsed_data.undulation);
+        printf("Undulation Units: %c\n", parsed_data.undulation_units);
+        printf("Age: %f\n", parsed_data.age);
+        printf("Station ID: %s\n", parsed_data.station_id);
     }
     return 0;
 }
@@ -42,7 +55,7 @@ int app_main()
 
 gps_parameters parse_gps_data(char * packet)
 {
-    gps_parameters packet_parameters;
+    static gps_parameters packet_parameters;
     int field_counter = 0;
     int packet_iterator = 0;
     int field_iterator = 0;
@@ -79,21 +92,18 @@ gps_parameters parse_gps_data(char * packet)
                     case 0:
                         while (field != NULL) {
                             packet_parameters.is_valid = 1;
-                            ESP_LOGI(TAG,"%s\n",field);
                             break;
                         }
                         break;
                     case 1:
                         while (field != NULL) {
                             packet_parameters.utc_time = atof(field);
-                            ESP_LOGI(TAG,"%s\n",field);
                             break;
                         }
                         break;
                     case 2: 
                         while (field != NULL) {
                             packet_parameters.latitude = atof(field);
-                            ESP_LOGI(TAG,"%s\n",field);
                             break;
                         }
                         break;
@@ -101,7 +111,6 @@ gps_parameters parse_gps_data(char * packet)
                         while (field != NULL) {
                             if (*field == 'S') {
                                 packet_parameters.latitude = -packet_parameters.latitude;
-                                ESP_LOGI(TAG,"%s\n",field);
                             }
                                 break;
                         }
@@ -109,7 +118,6 @@ gps_parameters parse_gps_data(char * packet)
                     case 4: 
                         while (field != NULL) {
                             packet_parameters.longitude = atof(field);
-                            ESP_LOGI(TAG,"%s\n",field);
                             break;
                         }
                         break;
@@ -117,79 +125,69 @@ gps_parameters parse_gps_data(char * packet)
                         while (field != NULL) {
                             if (*field == 'W') {
                                 packet_parameters.longitude = -packet_parameters.longitude;
-                                ESP_LOGI(TAG,"%s\n",field);
                             }               
                             break;
                         }
                         break;
                     case 6:
                         while (field != NULL) {
-                                packet_parameters.fix_quality = atof(field);
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.fix_quality = atof(field);
+                            break;
                         }
                         break;
                     case 7:
                         while (field != NULL) {
-                                packet_parameters.number_of_satelities = atof(field);
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.number_of_satelities = atof(field);
+                            break;
                         }
                         break;
                     case 8:
                         while (field != NULL) {
-                                packet_parameters.hdop = atof(field);
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.hdop = atof(field);
+                            break;
                         }
                         break;
                     case 9:
                         while (field != NULL) {
-                                packet_parameters.altitude = atof(field);
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.altitude = atof(field);
+                            break;
                         }
                         break;
                     case 10:
                         while (field != NULL) {
-                                packet_parameters.altitude_units = field;
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                                packet_parameters.altitude_units = *field;
+                            break;
                         }
                         break;
                     case 11:
                         while (field != NULL) {
-                                packet_parameters.undulation = atof(field);
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.undulation = atof(field);
+                            break;
                         }
                         break;
                     case 12:
                         while (field != NULL) {
-                                packet_parameters.undulation_units = field;
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.undulation_units = *field;
+                            break;
                         }
                         break;
                     case 13:
                         while (field != NULL) {
-                                packet_parameters.age = atof(field);
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            packet_parameters.age = atof(field);
+                            break;
                         }
                         break;
                     case 14:
                         while (field != NULL) {
-                                packet_parameters.station_id = field;
-                                ESP_LOGI(TAG,"%s\n",field);
-                                break;
+                            strncpy(packet_parameters.station_id,field,4); 
+                            break;
                         }
                         break;
                     case 15:
                         while (field != NULL) {
                                 if (checksum != strtol(field,NULL,16))
                                 packet_parameters.is_valid = 0;
-                                ESP_LOGI(TAG,"%s\n",field);
+//                                ESP_LOGI(TAG,"%s\n",field);
                                 break;
                         }
                         break;
