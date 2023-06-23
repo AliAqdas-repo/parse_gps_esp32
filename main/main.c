@@ -29,32 +29,9 @@ static const char *TAG = "example";
 
 int app_main()
 {
-
-    // char* msg = malloc(MAX_PACKET_LENGTH);
     gps_parameters parsed_data;
-    //Setting Up UART
-    // const uart_port_t uart_num = UART_NUM_2;
-    // uart_config_t uart_config = {
-    // .baud_rate = 115200,
-    // .data_bits = UART_DATA_8_BITS,
-    // .parity = UART_PARITY_DISABLE,
-    // .stop_bits = UART_STOP_BITS_1,
-    // .flow_ctrl = UART_HW_FLOWCTRL_CTS_RTS,
-    // .rx_flow_ctrl_thresh = 122,
-    // };
-    // // Configure UART parameters
-    // ESP_ERROR_CHECK(uart_param_config(UART_NUM_2, &uart_config));
-    // //Set Communication Pins
-    // ESP_ERROR_CHECK(uart_set_pin(UART_NUM_2, 4, 5, 18, 19));
-    // const int uart_buffer_size = (1024 * 2);
-    // QueueHandle_t uart_queue;
-    // ESP_ERROR_CHECK(uart_driver_install(UART_NUM_2, uart_buffer_size, 
-    //                                     uart_buffer_size, 10, &uart_queue, 0));
-
-    // printf("Hello World\n");
+    
     while (1) {
-        // fgets(msg,84,stdin);
-        // int len = uart_read_bytes(UART_NUM_2,msg,uart_buffer_size,20 / portTICK_PERIOD_MS);
         char *msg = "$GPGGA,202530.00,5109.0262,N,11401.8407,W,5,40,0.5,1097.36,M,-17.00,M,18,TSTR*61";
         parsed_data = parse_gps_data(msg);
         ESP_LOGI(TAG,"Goodbye!\n");
