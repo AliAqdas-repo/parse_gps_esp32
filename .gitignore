@@ -1,0 +1,12 @@
+build/
+sdkconfig
+sdkconfig.old
+.devcontainer/devcontainer.json
+.devcontainer/Dockerfile
+.vscode/c_cpp_properties.json
+.vscode/launch copy.json
+.vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
+debug.log
+main/CMakeLists.txt
